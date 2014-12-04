@@ -1,4 +1,4 @@
-Javascript WinPhone DatePicker
+Windows Phone WinJS DatePicker
 ==============================
 
 For some unknown (by me) reason [WinJS.UI.DatePicker](http://msdn.microsoft.com/en-us/library/windows/apps/br211681.aspx) is only available for Windows Store apps, not Windows Phone. (the control is also available for XAML apps).
