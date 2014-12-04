@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>sample</title>
+
+    <!-- WinJS references -->
+    <!-- At runtime, ui-themed.css resolves to ui-themed.light.css or ui-themed.dark.css 
+    based on the user’s theme setting. This is part of the MRT resource loading functionality. -->
+    <link href="/css/ui-themed.css" rel="stylesheet" />
+    <script src="//Microsoft.Phone.WinJS.2.1/js/base.js"></script>
+    <script src="//Microsoft.Phone.WinJS.2.1/js/ui.js"></script>
+
+	<script src="rxjs/rx.lite.js"></script>
+	<script src="js/Goomez.UI.DatePicker.js"></script>
+
+    <!-- sample references -->
+    <link href="/css/default.css" rel="stylesheet" />
+    <script src="/js/default.js"></script>
+</head>
+<body class="phone">
+	<div>
+		<label for="shortDate">Select the date</label>
+		<div id="shortDate" data-win-control="Goomez.UI.DatePicker" data-win-options="{mode: 'edit', control: 'date', picture: 'shortdate'}"></div>
+		<br />
+		<p>You selected</p>
+		<div id="selected"></div>
+	</div>
+</body>
+</html>

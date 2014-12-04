@@ -8,6 +8,8 @@ So I decided to create my own DateTime picker.
 
 It's a very simple control which basically adds a `select` for every "part" of the date. Which means one for the day, one for the month, and one for the year.
 
+![](img.png)
+
 This does not pretend to be a full featured control, it just meet my own needs, but I'll be glad to take pull request if you feel like contributing.
 
  
