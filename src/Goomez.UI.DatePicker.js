@@ -18,8 +18,21 @@
 			this.isReadOnly = options.mode === 'view';
 			this.dateimeControl = options.control;
 			this.picture = options.picture;
-			this.internalValue = null;
+			this._minYear = options.minYear || 1940;
+			this._maxYear = options.maxYear || 2039;
 			this.formatter = new Windows.Globalization.DateTimeFormatting.DateTimeFormatter(this.picture)
+			this._order = 'mdy';
+			if (options.order &&
+				options.order.length === 3 &&
+				options.order.toLowerCase().indexOf('d') !== -1 &&
+				options.order.toLowerCase().indexOf('m') !== -1 &&
+				options.order.toLowerCase().indexOf('y') !== -1){
+				this._order = options.order;
+			}
+
+			this._calendar = new Windows.Globalization.Calendar();
+			this.internalValue = null;
+
 
 			if (this.isReadOnly) {
 				var span = document.createElement('span');
@@ -28,26 +41,36 @@
 			}
 			else {
 				if (this.dateimeControl === 'datetime') {
-					this.setDaySelect(element);
-					this.setMonthSelect(element);
-					this.setYearSelect(element);
-					this.setHourSelect(element);
-					this.setMinutesSelect(element);
+					this.createDateControl(element);
+					this.createTimeControl(element);
 				}
-				if (this.dateimeControl === 'date') {
-					this.setDaySelect(element);
-					this.setMonthSelect(element);
-					this.setYearSelect(element);
-				}
-				if (this.dateimeControl === 'time') {
-					this.setHourSelect(element);
-					this.setMinutesSelect(element);
-				}
+				if (this.dateimeControl === 'date')
+					this.createDateControl(element);
+				if (this.dateimeControl === 'time')
+					this.createTimeControl(element);
 			}
 		},
 		{
+			createDateControl: function (element) {
+				var that = this;
+				var index = 1; //if zero based it fails when index === 0
+				this._order.split('').forEach(function (v) {
+					if (v.toLowerCase() === 'm')
+						that.setMonthSelect(element, index);
+					if (v.toLowerCase() === 'd')
+						that.setDaySelect(element, index);
+					if (v.toLowerCase() === 'y')
+						that.setYearSelect(element, index);
+					index++;
+				});
+			},
+			createTimeControl: function (element) {
+				this.setHourSelect(element);
+				this.setMinutesSelect(element);
+			},
 			setMinutesSelect: function (element) {
 				this.minute = document.createElement('select');
+				this.minute.style.width = '100px';
 				this.minute.id = 'minute';
 				for (var i = 0; i < 60; i++) {
 					var choice = document.createElement('option');
@@ -66,16 +89,22 @@
 			},
 			setHourSelect: function (element) {
 				this.hour = document.createElement('select');
+				this.hour.style.marginRight = '20px';
+				this.hour.style.width = '100px';
 				this.hour.id = 'hour';
 				for (var i = 0; i <= 23; i++) {
 					var choice = document.createElement('option');
 					choice.setAttribute('value', i);
-					if (i === 0)
-						choice.textContent = "12 AM";
-					else if (i === 12)
-						choice.textContent = "12 PM";
-					else
-						choice.textContent = i < 12 ? i + " AM" : (i - 12) + " PM";
+					if (this._calendar.getClock() === Windows.Globalization.ClockIdentifiers.twelveHour) {
+						if (i === 0)
+							choice.textContent = "12 AM";
+						else if (i === 12)
+							choice.textContent = "12 PM";
+						else
+							choice.textContent = i < 12 ? i + " AM" : (i - 12) + " PM";
+					} else 
+						choice.textContent = i;
+					
 					this.hour.appendChild(choice);
 				}
 
@@ -83,8 +112,11 @@
 
 				this._observeChanges(this.hour, this._selectionChanged.bind(this));
 			},
-			setDaySelect: function (element) {
+			setDaySelect: function (element, index) {
 				this.day = document.createElement('select');
+				if (index && index < 3)
+					this.day.style.marginRight = '20px';
+				this.day.style.width = '80%';
 				this.day.id = 'day';
 				for (var i = 1; i <= 31; i++) {
 					var choice = document.createElement('option');
@@ -97,10 +129,13 @@
 
 				this._observeChanges(this.day, this._selectionChanged.bind(this));
 			},
-			setYearSelect: function (element) {
+			setYearSelect: function (element, index) {
 				this.year = document.createElement('select');
+				if (index && index < 3)
+					this.year.style.marginRight = '20px';
+				this.year.style.width = '80%';
 				this.year.id = 'year';
-				for (var i = 1940; i <= 2039; i++) { //??
+				for (var i = this._minYear; i <= this._maxYear; i++) { //??
 					var choice = document.createElement('option');
 					choice.setAttribute('value', i);
 					choice.textContent = i;
@@ -111,15 +146,17 @@
 
 				this._observeChanges(this.year, this._selectionChanged.bind(this));
 			},
-			setMonthSelect: function (element) {
+			setMonthSelect: function (element, index) {
 				this.month = document.createElement('select');
-				var calendar = new Windows.Globalization.Calendar();
+				if (index && index < 3)
+					this.month.style.marginRight = '20px';
+				//this.month.style.width = '115%';
 				this.month.id = 'month';
 				for (var i = 1; i <= 12; i++) {
 					var choice = document.createElement('option');
 					choice.setAttribute('value', i);
-					calendar.month = i;
-					choice.textContent = calendar.monthAsString();
+					this._calendar.month = i;
+					choice.textContent = this._calendar.monthAsString();
 					this.month.appendChild(choice);
 				}
 
@@ -141,7 +178,7 @@
 
 				this.value = date;
 			},
-			_observeChanges: function(element, handle){
+			_observeChanges: function (element, handle) {
 				Rx.Observable.fromEvent(element, 'change').subscribe(handle);
 			},
 			_getDate: function () {
