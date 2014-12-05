@@ -12,6 +12,10 @@
 				.subscribe(function (eventInfo) {
 					selected.textContent = eventInfo.currentTarget.winControl.value.toDateString();
 				});
+				Rx.Observable.fromEvent(shortTime, 'change')
+				.subscribe(function (eventInfo) {
+					selected.textContent = eventInfo.currentTarget.winControl.value.toTimeString();
+				});
 			}));
 	};
 ;

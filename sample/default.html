@@ -21,8 +21,9 @@
 <body class="phone">
 	<div>
 		<label for="shortDate">Select the date</label>
-		<div id="shortDate" data-win-control="Goomez.UI.DatePicker" data-win-options="{mode: 'edit', control: 'date', picture: 'shortdate'}"></div>
+		<div id="shortDate" data-win-control="Goomez.UI.DatePicker" data-win-options="{mode: 'edit', control: 'date', picture: 'shortdate', minYear: 1978, maxYear: 2014}"></div>
 		<br />
+		<div id="shortTime" data-win-control="Goomez.UI.DatePicker" data-win-options="{mode: 'edit', control: 'time', picture: 'shorttime', minYear: 1978, maxYear: 2014}"></div>
 		<p>You selected</p>
 		<div id="selected"></div>
 	</div>
