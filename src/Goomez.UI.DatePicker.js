@@ -150,7 +150,6 @@
 				this.month = document.createElement('select');
 				if (index && index < 3)
 					this.month.style.marginRight = '20px';
-				//this.month.style.width = '115%';
 				this.month.id = 'month';
 				for (var i = 1; i <= 12; i++) {
 					var choice = document.createElement('option');
